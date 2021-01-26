@@ -7,19 +7,15 @@ export const types = {
   ENQUEUE_SNACKBAR: "views/app/ENQUEUE_SNACKBAR",
   CLOSE_SNACKBAR: "views/app/CLOSE_SNACKBAR",
   REMOVE_SNACKBAR: "views/app/REMOVE_SNACKBAR",
-  REMINDER_CREATED: "views/app/REMINDER_CREATED",
-  REMINDER_EDITED: "views/app/REMINDER_EDITED",
+  SEARCH_STARTED: "views/app/SEARCH_STARTED",
+  SEARCH_FINISHED: "views/app/SEARCH_FINISHED",
 };
 
 // initial state
 export const initialState = {
   notifications: [],
-  lastResults: [
-    {
-      street: "a",
-      city: "wellington",
-    },
-  ],
+  currentResult: null,
+  lastResults: [],
 };
 
 // reducers
@@ -30,20 +26,19 @@ export default (state = initialState, action) => {
         ...state,
         notifications: [action.payload],
       };
-    case types.REMINDER_CREATED:
+    case types.SEARCH_STARTED:
       return {
         ...state,
-        reminders: [...state.reminders, action.payload.reminder],
+        currentResult: null,
+        lastResults:
+          state.currentResult != null
+            ? [...state.lastResults, state.currentResult]
+            : state.lastResults,
       };
-    case types.REMINDER_EDITED:
-      const payloadReminder = action.payload.reminder;
-      const nextReminders = [...state.reminders];
-      nextReminders[
-        nextReminders.findIndex((r) => r.id === payloadReminder.id)
-      ] = payloadReminder;
+    case types.SEARCH_FINISHED:
       return {
         ...state,
-        reminders: [...nextReminders],
+        currentResult: action.payload.result,
       };
     default:
       return state;
@@ -69,16 +64,13 @@ export const getErrorMessage = (message) => ({
   },
 });
 
-export const createReminder = (reminder) => ({
-  type: types.REMINDER_CREATED,
-  payload: {
-    reminder: reminder,
-  },
+export const searchStarted = () => ({
+  type: types.SEARCH_STARTED,
 });
 
-export const editReminder = (reminder) => ({
-  type: types.REMINDER_EDITED,
+export const searchFinished = (result) => ({
+  type: types.SEARCH_FINISHED,
   payload: {
-    reminder: reminder,
+    result,
   },
 });

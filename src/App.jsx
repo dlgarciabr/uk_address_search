@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { withSnackbar } from "notistack";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -15,28 +15,31 @@ import Button from "@material-ui/core/Button";
 import { useShowErrorMessage } from "./hooks/messageHandler";
 import useStyles from "./App.styles";
 import Address from "./views/app/components/Address";
+import { getAddressData } from "./views/app/apis";
+import { searchStarted, searchFinished } from "./views/app/ducks";
 
 function App(props) {
-  const mockedResult = {
-    postcode: "123123",
-    city: "London",
-    street: "St Julian",
-    latitude: 0,
-    longitute: 0,
-  };
-
+  const dispatch = useDispatch();
   const showErrorMessage = useShowErrorMessage();
   const classes = useStyles();
   const [postcode, setPostCode] = useState("");
   const [postcodeFulfilled, setPostcodeFulfilled] = useState(true);
-  const { notifications, lastResults } = useSelector((state) => state.app);
+  const { notifications, currentResult, lastResults } = useSelector(
+    (state) => state.app
+  );
 
-  const handleClickSearch = () => {
+  const handleClickSearch = async () => {
     if (postcode === "") {
       showErrorMessage("Type postcode before search");
       setPostcodeFulfilled(false);
     } else {
-      //TODO: call api to search
+      dispatch(searchStarted());
+      const result = await getAddressData(postcode);
+      if (result.error) {
+        showErrorMessage(result.errorMessage);
+      } else {
+        dispatch(searchFinished(result));
+      }
     }
   };
 
@@ -93,7 +96,11 @@ function App(props) {
                 </Grid>
               </Grid>
               <Grid item xs={12}>
-                <Address data={mockedResult} />
+                {currentResult ? (
+                  <Address data={currentResult} />
+                ) : (
+                  "type a valid postcode to search"
+                )}
               </Grid>
             </Grid>
             <Grid item xs={12} lg={6}>

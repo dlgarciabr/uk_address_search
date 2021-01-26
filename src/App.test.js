@@ -1,27 +1,36 @@
 import React from "react";
 import userEvent from "@testing-library/user-event";
-import moment from "moment";
 import { fireEvent } from "@testing-library/react";
 
 import { render, screen, waitFor } from "./utils/test-utils";
 import App from "./App";
+import mockAxios from "axios";
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe("Customer address search", () => {
+describe("Customer address searching", () => {
   test("Search with an invalid address", async () => {
     //arrange
     const invalidPostCode = "AAABBBCCC";
-    const expectedResult = "";
+
+    mockAxios.get.mockImplementationOnce(() =>
+      Promise.reject({
+        response: {
+          data: {
+            status: 404,
+            error: "Invalid postcode",
+          },
+        },
+      })
+    );
 
     render(<App />);
 
     await new Promise((r) => setTimeout(r, 1000));
 
     //act
-
     userEvent.type(
       screen.getByRole("textbox", { name: "Customer Postcode" }),
       invalidPostCode
@@ -30,62 +39,52 @@ describe("Customer address search", () => {
     userEvent.click(screen.getByRole("button", { name: "Search" }));
 
     //assert
+    expect(mockAxios.get).toHaveBeenCalledTimes(1);
 
     await waitFor(() =>
-      expect(
-        screen.queryByRole("heading", { name: "Address not found" })
-      ).toBeInTheDocument()
+      expect(screen.getByText("Invalid postcode")).toBeInTheDocument()
     );
   });
 
-  test.todo("Search with a valid address");
-  // test("Create a reminder to current day", async () => {
-  //   //arrange
-  //   const today = moment();
-  //   const description = "new test reminder";
-  //   const time = "10:00";
-  //   const city = "Monaco";
+  test("Search with a valid address", async () => {
+    //arrange
+    const invalidPostCode = "N76RS";
+    const city = "Islington";
 
-  //   const createReminderAriaLabel = `create reminder to day ${today.date()} of ${today.format(
-  //     "MMMM"
-  //   )}`;
+    mockAxios.get.mockImplementationOnce(() =>
+      Promise.resolve({
+        data: {
+          result: {
+            postcode: "N7 6RS",
+            longitude: -0.116805,
+            latitude: 51.560414,
+            region: "London",
+            parliamentary_constituency: "Islington North",
+            admin_district: city,
+          },
+        },
+      })
+    );
 
-  //   render(<App />);
+    render(<App />);
 
-  //   //act
-  //   const createReminderButton = screen.getByRole("button", {
-  //     name: createReminderAriaLabel,
-  //   });
+    await new Promise((r) => setTimeout(r, 1000));
 
-  //   userEvent.click(createReminderButton);
+    //act
+    userEvent.type(
+      screen.getByRole("textbox", { name: "Customer Postcode" }),
+      invalidPostCode
+    );
 
-  //   expect(
-  //     screen.getByRole("heading", { name: "Create reminder" })
-  //   ).toBeInTheDocument();
+    userEvent.click(screen.getByRole("button", { name: "Search" }));
 
-  //   userEvent.type(screen.getByTestId("input-description"), description);
+    //assert
+    expect(mockAxios.get).toHaveBeenCalledTimes(1);
 
-  //   const materiaTextField = screen.getByTestId("input-time");
-
-  //   fireEvent.change(materiaTextField.childNodes[1].firstChild, {
-  //     target: { value: time },
-  //   });
-
-  //   userEvent.type(screen.getByTestId("input-city"), city);
-
-  //   userEvent.click(screen.getByRole("button", { name: "Save" }));
-
-  //   //assert
-  //   await waitFor(() =>
-  //     expect(
-  //       screen.queryByRole("heading", { name: "Create reminder" })
-  //     ).not.toBeInTheDocument()
-  //   );
-
-  //   const reminder = [
-  //     ...createReminderButton.parentElement.nextElementSibling.childNodes,
-  //   ].find((n) => n.innerHTML === `${time} ${description}`);
-
-  //   expect(reminder).toBeInTheDocument();
-  // });
+    await waitFor(() =>
+      expect(
+        screen.getByRole("heading", { name: `City: ${city}` })
+      ).toBeInTheDocument()
+    );
+  });
 });

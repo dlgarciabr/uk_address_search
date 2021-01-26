@@ -4,7 +4,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 
-const Address = ({ data: { postcode, city, street } }) => {
+const Address = ({ data: { postcode, admin_district, region } }) => {
   return (
     <Card>
       <CardContent>
@@ -12,12 +12,10 @@ const Address = ({ data: { postcode, city, street } }) => {
           Postcode: {postcode}
         </Typography>
         <Typography variant="h5" component="h2">
-          {city}
+          City: {admin_district}
         </Typography>
         <Typography variant="body2" component="p">
-          {street}
-          <br />
-          {"other data"}
+          Region: {region}
         </Typography>
       </CardContent>
     </Card>

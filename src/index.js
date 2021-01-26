@@ -8,7 +8,7 @@ import thunk from "redux-thunk"; //allow async async action creators
 import { SnackbarProvider } from "notistack";
 
 import "./index.css";
-import App from './App';
+import App from "./App";
 import rootReducer from "./utils/reducers";
 
 const devTools =
@@ -21,9 +21,9 @@ const store = applyMiddleware(multi, thunk, promise)(createStore)(
 
 ReactDOM.render(
   <Provider store={store}>
-        <SnackbarProvider maxSnack={3}>
-          <App/>
-        </SnackbarProvider>
+    <SnackbarProvider maxSnack={3}>
+      <App />
+    </SnackbarProvider>
   </Provider>,
   document.getElementById("root")
 );

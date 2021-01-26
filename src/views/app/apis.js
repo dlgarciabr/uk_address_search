@@ -1,25 +1,26 @@
 import axios from "axios";
 
 export const getAddressData = async (postCode) => {
-  let newWeather = {
+  let addressData = {
     error: false,
     errorMessage: "",
   };
   const response = await axios
-    .get(
-      `${process.env.REACT_APP_ADDRESS_API_URL}?q=${city}&appid=${process.env.REACT_APP_WEATHER_API_KEY}&units=metric`
-    )
+    .get(`${process.env.REACT_APP_ADDRESS_API_URL}/${postCode}`)
     .catch(function (error) {
-      newWeather.error = true;
-      newWeather.errorMessage = error.response
-        ? error.response.data.message
+      addressData.error = true;
+      addressData.errorMessage = error.response
+        ? error.response.data.error
         : error;
+      return addressData;
     });
 
-  if (response) {
-    newWeather.condition = response.data.weather[0].main;
-    newWeather.temp = response.data.main.temp;
+  if (response.data) {
+    addressData.postcode = response.data.result.postcode;
+    addressData.longitude = response.data.result.longitude;
+    addressData.latitude = response.data.result.latitude;
+    addressData.region = response.data.result.region;
+    addressData.admin_district = response.data.result.admin_district;
   }
-
-  return newWeather;
+  return addressData;
 };
