@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { withSnackbar } from "notistack";
 import { useSelector } from "react-redux";
 
@@ -11,15 +11,34 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
 
-import CardContent from "@material-ui/core/CardContent";
-
+import { useShowErrorMessage } from "./hooks/messageHandler";
 import useStyles from "./App.styles";
+import Address from "./views/app/components/Address";
 
 function App(props) {
+  const mockedResult = {
+    postcode: "123123",
+    city: "London",
+    street: "St Julian",
+    latitude: 0,
+    longitute: 0,
+  };
+
+  const showErrorMessage = useShowErrorMessage();
   const classes = useStyles();
-  const { notifications } = useSelector((state) => state.app);
+  const [postcode, setPostCode] = useState("");
+  const [postcodeFulfilled, setPostcodeFulfilled] = useState(true);
+  const { notifications, lastResults } = useSelector((state) => state.app);
+
+  const handleClickSearch = () => {
+    if (postcode === "") {
+      showErrorMessage("Type postcode before search");
+      setPostcodeFulfilled(false);
+    } else {
+      //TODO: call api to search
+    }
+  };
 
   useEffect(() => {
     notifications.forEach((messageData) => {
@@ -51,42 +70,39 @@ function App(props) {
         <Container maxWidth="xl" className={classes.container}>
           <Grid container spacing={2}>
             <Grid item container xs={12} lg={6}>
-              <Grid item container xs={12}>
+              <Grid item container xs={12} alignItems="center">
                 <Grid item xs={10}>
                   <TextField
+                    variant="outlined"
+                    margin="dense"
+                    error={!postcodeFulfilled}
                     id="standard-basic"
                     label="Customer Postcode"
                     fullWidth
+                    value={postcode}
+                    onChange={(event) => {
+                      setPostcodeFulfilled(true);
+                      setPostCode(event.target.value);
+                    }}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <Button variant="contained">Search</Button>
+                  <Button variant="contained" onClick={handleClickSearch}>
+                    Search
+                  </Button>
                 </Grid>
               </Grid>
               <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <Typography color="textSecondary" gutterBottom>
-                      Word of the Day
-                    </Typography>
-                    <Typography variant="h5" component="h2">
-                      alsdlaskd
-                    </Typography>
-                    <Typography color="textSecondary">adjective</Typography>
-                    <Typography variant="body2" component="p">
-                      well meaning and kindly.
-                      <br />
-                      {'"a benevolent smile"'}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <Address data={mockedResult} />
               </Grid>
             </Grid>
             <Grid item xs={12} lg={6}>
               <Typography color="textSecondary">Last results</Typography>
-              <Paper>asdasd</Paper>
-              <Paper>asdasd</Paper>
-              <Paper>asdasd</Paper>
+              {lastResults.length === 0 ? (
+                <Paper>No previous searchs</Paper>
+              ) : (
+                lastResults.map((result) => <Address data={result} />)
+              )}
             </Grid>
           </Grid>
         </Container>

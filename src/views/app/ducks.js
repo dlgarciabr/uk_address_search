@@ -1,5 +1,4 @@
 // views/app/ducks.js
-import moment from "moment";
 
 import messages from "../../utils/messages";
 
@@ -15,41 +14,10 @@ export const types = {
 // initial state
 export const initialState = {
   notifications: [],
-  reminders: [
+  lastResults: [
     {
-      id: Math.random() * 10,
-      description: "note",
-      datetime: moment().hour(7),
-      color: "#DF74DA",
-      city: "Rio de Janeiro",
-    },
-    {
-      id: Math.random() * 10,
-      description: "note aaa",
-      datetime: moment().date(10).hour(1),
-      color: "#74DF8B",
-      city: "Melbourne",
-    },
-    {
-      id: Math.random() * 10,
-      description: "note zds",
-      datetime: moment().hour(5),
-      color: "#74DF8B",
-      city: "Valleta",
-    },
-    {
-      id: Math.random() * 10,
-      description: "note bbb",
-      datetime: moment().date(25).hour(11),
-      color: "#714D55",
-      city: "San Francisco",
-    },
-    {
-      id: Math.random() * 10,
-      description: "note dddd",
-      datetime: moment().date(29).hour(10),
-      color: "#DF74DA",
-      city: "Belo Horizonte",
+      street: "a",
+      city: "wellington",
     },
   ],
 };
@@ -83,7 +51,7 @@ export default (state = initialState, action) => {
 };
 
 // Action Creators
-export const showSuccessMessage = () => ({
+export const getSuccessMessage = () => ({
   type: types.ENQUEUE_SNACKBAR,
   payload: {
     message: messages.OPERATION_SUCCESSFULL,
@@ -92,7 +60,7 @@ export const showSuccessMessage = () => ({
   },
 });
 
-export const showErrorMessage = (message) => ({
+export const getErrorMessage = (message) => ({
   type: types.ENQUEUE_SNACKBAR,
   payload: {
     message: message || messages.OPERATION_ERROR,
