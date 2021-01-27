@@ -1,6 +1,7 @@
 // views/app/ducks.js
 
 import messages from "../../utils/messages";
+import { distance } from "../../utils/distance-utils";
 
 // action types
 export const types = {
@@ -27,18 +28,35 @@ export default (state = initialState, action) => {
         notifications: [action.payload],
       };
     case types.SEARCH_STARTED:
+      const lastResults =
+        state.lastResults.length >= 3
+          ? [...state.lastResults].filter((curr, index) => index !== 0)
+          : [...state.lastResults];
       return {
         ...state,
         currentResult: null,
         lastResults:
           state.currentResult != null
-            ? [...state.lastResults, state.currentResult]
-            : state.lastResults,
+            ? [...lastResults, state.currentResult]
+            : lastResults,
       };
     case types.SEARCH_FINISHED:
+      const referenceDistanceMi = distance(
+        process.env.REACT_APP_REFERENCE_LATITUDE,
+        process.env.REACT_APP_REFERENCE_LONGITUDE,
+        action.payload.result.latitude,
+        action.payload.result.longitude,
+        "M"
+      );
+      const referenceDistanceKm = referenceDistanceMi * 1.609344;
+      const currentResult = {
+        ...action.payload.result,
+        referenceDistanceKm: referenceDistanceKm.toFixed(3),
+        referenceDistanceMi: referenceDistanceMi.toFixed(3),
+      };
       return {
         ...state,
-        currentResult: action.payload.result,
+        currentResult,
       };
     default:
       return state;

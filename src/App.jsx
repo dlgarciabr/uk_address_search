@@ -71,7 +71,7 @@ function App(props) {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="xl" className={classes.container}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} alignItems="flex-start">
             <Grid item container xs={12} lg={6}>
               <Grid item container xs={12} alignItems="center">
                 <Grid item xs={10}>
@@ -97,19 +97,24 @@ function App(props) {
               </Grid>
               <Grid item xs={12}>
                 {currentResult ? (
-                  <Address data={currentResult} />
+                  <>
+                    <Typography color="textSecondary">
+                      Current result
+                    </Typography>
+                    <Address data={currentResult} />
+                  </>
                 ) : (
-                  "type a valid postcode to search"
+                  <Typography color="textSecondary">
+                    type a valid postcode to search
+                  </Typography>
                 )}
               </Grid>
             </Grid>
             <Grid item xs={12} lg={6}>
               <Typography color="textSecondary">Last results</Typography>
-              {lastResults.length === 0 ? (
-                <Paper>No previous searchs</Paper>
-              ) : (
-                lastResults.map((result) => <Address data={result} />)
-              )}
+              {lastResults.length === 0
+                ? "No previous searchs"
+                : lastResults.map((result) => <Address data={result} />)}
             </Grid>
           </Grid>
         </Container>
