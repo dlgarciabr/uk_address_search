@@ -1,5 +1,8 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+A few examples of valid postcodes in the UK are:
+PostCode N76RS SW46TA SW1A W1B3AG PO63TD
+
 ## Dependencies
 
 ### `npm install`
@@ -35,4 +38,4 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you canâ€™t go back!**
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
