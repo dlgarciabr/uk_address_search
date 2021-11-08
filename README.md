@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-This is a small web application that allows you to find the addresses based on postcodes. <br />
+This is a small web application that allows you to find the addresses based on UK postal codes. <br />
 Multiple addresses can be searched and added to the history of the last 3 in the page. 
 It also displays the distance in a straight line, from the searched location to London Heathrow airport (lat/long: 51.4700223,-0.4542955) in kilometers and miles.
 
